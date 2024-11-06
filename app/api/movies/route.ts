@@ -12,6 +12,5 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         return NextResponse.json({ error: "Missing userId query parameter" }, { status: 400 });
     }
     const matchingMovies: Movie[] = await movieService.searchByTitle(partialTitle, userId);
-    console.log(matchingMovies);
     return NextResponse.json(matchingMovies);
 }

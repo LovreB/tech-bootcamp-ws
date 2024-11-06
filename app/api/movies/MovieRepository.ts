@@ -18,18 +18,16 @@ class MovieRepository {
         }
     }
 
-    async findMovieByImdbId(imdbId: string): Promise<MovieEntity | null> {
-        try {
-            return await prisma.movieEntity.findUnique({
-                where: {
-                    imdb_id: imdbId
-                }
-            });
-        } catch (error) {
-            console.error("Movie not found:", error);
-            throw error;
-        }
+    async deleteById(movie_id: string): Promise<void> {
+        await prisma.movieEntity.delete({
+            where: { id: movie_id },
+        });
     }
+
+    async findByImdbId(imdb_id: string): Promise<MovieEntity | null> {
+        return prisma.movieEntity.findUnique({ where: { imdb_id } });
+    }
+
 }
 
 export const movieRepository = new MovieRepository();

@@ -21,7 +21,7 @@ export class MovieService {
     }
 
     async getOrCreateMovie(imdbId: string): Promise<InternalMovie> {
-        const movieEntity: MovieEntity | null = await movieRepository.findMovieByImdbId(imdbId);
+        const movieEntity: MovieEntity | null = await movieRepository.findByImdbId(imdbId);
         if (movieEntity) {
             return InternalMovie.fromEntity(movieEntity);
         } else {
@@ -33,6 +33,10 @@ export class MovieService {
                 throw new Error(`Could not create movie with IMDB ID ${imdbId}`);
             }
         }
+    }
+
+    async deleteMovie(id: string) {
+        await movieRepository.deleteById(id);
     }
 
 }
