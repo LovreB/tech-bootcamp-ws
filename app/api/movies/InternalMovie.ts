@@ -41,7 +41,6 @@ export class InternalMovie {
         );
     }
 
-
     public toDto(isFavorite: boolean): Movie {
         return {
             imdbId: this._imdbId,

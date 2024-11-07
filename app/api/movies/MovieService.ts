@@ -12,6 +12,9 @@ export class MovieService {
     async searchByTitle(title: string, userId: string): Promise<Movie[]> {
         const response: OmdbSearchResponse = await omdbClient.searchByTitle(title);
         const omdbMovies: OmdbMovie[] = response.Search;
+        if (!omdbMovies) {
+            return [];
+        }
         const movieDtos: Movie[] = await Promise.all(omdbMovies.map(async (omdbMovie) => {
             const movie: InternalMovie = InternalMovie.fromOmdbMovie(omdbMovie);
             const isFavorite: boolean = await favoriteRepository.isFavorite(userId, movie.imdbId!);

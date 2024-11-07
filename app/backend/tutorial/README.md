@@ -353,7 +353,13 @@ to that specific user.
 ### 3.5.2 Create the API route for favorites
 Add the file `app/api/users/[userId]/favorites/[imdbId]/route.ts` with the following content:
 ```typescript
-
+export async function POST(request: NextRequest, context: { params: { userId: string, imdbId: string} }): Promise<NextResponse> {
+  const params = await context.params;
+  if (!params.userId || !params.imdbId) {
+    return NextResponse.json({ error: "Invalid request, missing userId or imdbId" }, { status: 400 });
+  }
+  return NextResponse.json({ }, { });
+}
 ``` 
 
 

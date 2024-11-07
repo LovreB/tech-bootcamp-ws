@@ -28,6 +28,10 @@ class MovieRepository {
         return prisma.movieEntity.findUnique({ where: { imdb_id } });
     }
 
+    async findById(id: string): Promise<MovieEntity | null> {
+        return prisma.movieEntity.findUnique({ where: { id } });
+    }
+
 }
 
 export const movieRepository = new MovieRepository();

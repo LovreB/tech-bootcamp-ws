@@ -43,6 +43,12 @@ class FavoriteRepository {
         });
         return favorite !== null;
     }
+
+    async findAllFavorites(userId: string): Promise<FavoriteEntity[]> {
+        return prisma.favoriteEntity.findMany({
+            where: { user_id: userId }
+        });
+    }
 }
 
 export const favoriteRepository = new FavoriteRepository();
