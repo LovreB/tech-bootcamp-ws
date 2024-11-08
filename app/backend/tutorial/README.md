@@ -112,6 +112,12 @@ Now everything seems to work and we are ready to start coding! 🚀
 
 # 3. Searching for movie titles
 We want to be able to search for movie titles in the frontend and display the search results.
+First, make sure your server is still running, and go to `http://localhost:3000` in your browser.
+There you will see a search field where you can search for movies. Try searching for a movie title, and you will see
+that the search results are empty. This is because we have not yet implemented the search functionality in the backend.
+Let's go!
+// TODO: Add image of search field not working in frontend
+
 ## 3.1 What is a RESTful search endpoint
 A RESTful search endpoint is designed to allow clients to search or filter resources based on query parameters, 
 typically using the `GET` HTTP method. Our resource in this case, is movies, and we want to search using partial
@@ -170,11 +176,10 @@ search for several partial matches instead. We will use this.
 Now when we know what endpoint we should call, we create a client in our backend that fetches 
 movie titles from the OMDB API. 
 
-### 3.4.1 Adding types
+### 3.4.1 Types
 Since we are using TypeScript, we have the advantage of being able to type the response from the OMDB API.
-This helps us catch errors early and makes the code easier to read. We
-can create a type `OmdbMovie` representing the movie object that we get from the OMDB API.
-Create the file `OmdbApiMovie.ts` in the `omdb/types` directory.
+This helps us catch errors early and makes the code easier to read. We have already
+created a type `OmdbMovie` representing the movie object that we get from the OMDB API.
 ```typescript
 export type OmdbMovie = {
     "Title": string;
@@ -184,7 +189,7 @@ export type OmdbMovie = {
     "Poster": string;
 }
 ```
-Also create a type `OmdbSearchResponse` in the same directory representing the response from the OMDB API.
+We also have a type `OmdbSearchResponse` in the same directory representing the response from the OMDB API.
 ```typescript
 import {OmdbMovie} from "@/app/types/omdb/OmdbMovie";
 
@@ -194,61 +199,79 @@ export type OmdbSearchResponse = {
     Response: string;         // "True" if the request was successful, otherwise "False"
 }
 ```
-Also create a type `MovieDto` in the types directory representing the movie object that will e sent to the frontend.
+We also have create a type `Movie` representing the movie object that will e sent to the frontend.
 ```typescript
-export type MovieDto = {
+export type Movie = {
     /* Feel free to add more - så kan de själva välja i FE hur mycket detaljer de vill visa upp */
     imdbId: string;
     title: string;
     img: string;
     userId: string;
-    isFavorite?: boolean;
+    isFavorite: boolean;
 };
 ```
-DTO stands for Data Transfer Object, and is a design pattern used to transfer data between software application subsystems.
-Last of all, we create a class `Movie` in `api/movies` that will be used to represent the movie object in the backend.
+This is what we call a DTO which stands for Data Transfer Object. It is a design pattern used to transfer 
+data between software application subsystems. Last of all, we create a class `InternalMovie` in `api/movies` 
+that will be used to represent the movie object in the backend.
 ```typescript
-import {OmdbMovie} from "@/app/types/omdb/OmdbMovie";
-import {MovieDto} from "@/app/types/MovieDto";
+export class InternalMovie {
+  private _id: string;
+  private _imdbId: string;
+  private title: string;
+  private img: string;
 
-export class Movie {
-    private imdbId: string;
-    private title: string;
-    private img: string;
+  constructor(id: string, imdbId: string, title: string, img: string) {
+    this._id = id;
+    this._imdbId = imdbId;
+    this.title = title;
+    this.img = img;
+  }
 
-    constructor(imdbId: string, title: string, img: string) {
-        this.imdbId = imdbId;
-        this.title = title;
-        this.img = img;
-    }
+  get id(): string | null {
+    return this._id;
+  }
 
-    static from(omdbMovie: OmdbMovie): Movie {
-        return new Movie(
+  get imdbId(): string | null {
+    return this._imdbId;
+  }
+
+  static fromOmdbMovie(omdbMovie: OmdbMovie): InternalMovie {
+    return new InternalMovie(
+            "",
             omdbMovie.imdbID,
             omdbMovie.Title,
             omdbMovie.Poster
-        );
-    }
+    );
+  }
 
-    public toDto(): MovieDto {
-        return {
-            imdbId: this.imdbId,
-            title: this.title,
-            img: this.img,
-            isFavorite: false,
-            userId: ""
-        }
+  static fromEntity(movieEntity: MovieEntity): InternalMovie {
+    return new InternalMovie(
+            movieEntity.id,
+            movieEntity.imdb_id,
+            movieEntity.title,
+            movieEntity.img
+    );
+  }
+
+  public toDto(isFavorite: boolean): Movie {
+    return {
+      imdbId: this._imdbId,
+      title: this.title,
+      img: this.img,
+      isFavorite: isFavorite
     }
+  }
 }
+
 ```
 It has a static factory method `from`which takes an `OmdbMovie` object and returns a `Movie` instance. 
 This keeps transformation logic encapsulated within the `Movie` class, meaning that if the `OmdbMovie`
-structure changes, you only need to update this method. The `toDto` method returns a `MovieDto` object
+structure changes, you only need to update this method. The `toDto` method returns a `Movie` object
 customized for the frontend where extra parameters specific for the calling user will be included. 
 
 ### 3.4.2 Create the omdbClient file
 Create a separate class `OmdbClient` in `api/movies/omdbClient.ts`. Add a search method that fetches movies
-and return a `OmdbSearchResponse`.
+and returns a `OmdbSearchResponse`.
 ```typescript
 import axios from 'axios';
 import {OmdbSearchResponse} from "@/app/types/omdb/OmdbSearchResponse";
