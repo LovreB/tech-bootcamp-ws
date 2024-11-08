@@ -71,7 +71,7 @@ during the workshop.
 
 ```markdown
 # DB CONNECTION
-DATABASE_URL=postgresql://<firstname>.<lastname>:<password>@34.38.7.50:5432/postgres
+DATABASE_URL=postgresql://<your-firstname>.<first-letter-of-your-last-name>:<password>@34.38.7.50:5432/postgres
 ```
 To test your database connection, you can run Visma Studio with the command:
 ```bash
@@ -102,11 +102,11 @@ GET api/users/{id}
 ```
 Open a new terminal and try curling the endpoint with your own id:
 ```bash
-curl -X GET http://localhost:3000/api/users/<your-firstname>.<your-lastname>
+curl -X GET http://localhost:3000/api/users/<your-firstname>.<first-letter-of-your-last-name>
 ```
 This should return a user object with your name
 ```bash
-{"user":{"id":<your-firstname>.<your-lastname>}}
+{"user":{"id":<your-firstname>.<first-letter-of-your-last-name>}}
 ```
 Now everything seems to work and we are ready to start coding! 🚀
 
@@ -154,12 +154,9 @@ export async function GET(request: Request): Promise<NextResponse> {
 To verify that the endpoint works, we can `curl` it in the terminal. Make sure you still have your 
 server running, and call the endpoint using
 ```bash
-curl -X GET http://localhost:3000/api/movies?title=star
+curl -X GET http://localhost:3000/api/movies?title=star&userId=<your-firstname>.<first-letter-of-your-last-name>
 ```
-this should return a response
-``` bash 
-{"partialTitle":"star"}
-```
+this should return a list of movies with the word "star" in the title.
 
 ## 3.3 Browse the OMDB API
 Since we will get the movies from the OMDB API, we need to search for movies in their API. 
@@ -270,46 +267,49 @@ structure changes, you only need to update this method. The `toDto` method retur
 customized for the frontend where extra parameters specific for the calling user will be included. 
 
 ### 3.4.2 Create the omdbClient file
-Create a separate class `OmdbClient` in `api/movies/omdbClient.ts`. Add a search method that fetches movies
-and returns a `OmdbSearchResponse`.
+We have a separate class `OmdbClient` in `api/movies/omdbClient.ts` which will be responsible
+for all communication with the OMDB API. In this class we will add a search-method that 
+fetches movies and returns a `OmdbSearchResponse` using axios. Axios is a promise-based 
+HTTP client for the browser and node.js.
 ```typescript
 import axios from 'axios';
 import {OmdbSearchResponse} from "@/app/types/omdb/OmdbSearchResponse";
 
 class OmdbClient {
-    private readonly apiKey: string;
-    private readonly baseUrl: string;
+  private readonly apiKey: string;
+  private readonly baseUrl: string;
 
-    constructor() {
-        const apiKey = process.env.OMDB_API_KEY || '';
-        const baseUrl = process.env.OMDB_BASE_URL || '';
-        if (!apiKey) {
-            throw new Error('OMDb API key not provided. Set the OMDB_API_KEY environment variable in .env.');
-        } else if (!baseUrl) {
-            throw new Error('OMDb API URL not provided. Set the OMDB_API_URL environment variable in .env.');
-        }
-        this.apiKey = apiKey;
-        this.baseUrl = baseUrl;
+  constructor() {
+    const apiKey = process.env.OMDB_API_KEY || '';
+    const baseUrl = process.env.OMDB_BASE_URL || '';
+    if (!apiKey) {
+      throw new Error('OMDb API key not provided. Set the OMDB_API_KEY environment variable in .env.');
+    } else if (!baseUrl) {
+      throw new Error('OMDb API URL not provided. Set the OMDB_API_URL environment variable in .env.');
     }
-    
-    async searchByTitle(title: string): Promise<OmdbSearchResponse> {
-        try {
-            const response = await axios.get(this.baseUrl, {
-                params: {
-                    s: title,
-                    apikey: this.apiKey,
-                },
-            });
-            if (response.data && response.data.Response === 'True') {
-                return response.data;
-            } else {
-                return {} as OmdbSearchResponse;
-            }
-        } catch (error) {
-            console.error('Error fetching movie by title from OMDb:', error);
-            throw new Error('Failed to fetch movie from OMDb');
-        }
+    this.apiKey = apiKey;
+    this.baseUrl = baseUrl;
+  }
+  
+  /* <--------------- Add this method ---------------> */
+  async searchByTitle(title: string): Promise<OmdbSearchResponse> {
+    try {
+      const response = await axios.get(this.baseUrl, {
+        params: {
+          s: title,
+          apikey: this.apiKey,
+        },
+      });
+      if (response.data && response.data.Response === 'True') {
+        return response.data;
+      } else {
+        return {} as OmdbSearchResponse;
+      }
+    } catch (error) {
+      console.error('Error fetching movie by title from OMDb:', error);
+      throw new Error('Failed to fetch movie from OMDb');
     }
+  }
 }
 
 export const omdbClient = new OmdbClient();
@@ -384,8 +384,17 @@ export async function POST(request: NextRequest, context: { params: { userId: st
   return NextResponse.json({ }, { });
 }
 ``` 
+## Feedback 
+We are super-interested in any feedback you might have on this workshop. 
+Please reach out to us personally on anyone from Talent Search to provide 
+your feedback. Looking forward to hearing from you!
 
+## Future work
+If you want to continue working on this project outside of this project,
+we suggest you exchange the cloud database with a local database. 
+We suggest running a PostgreSQL database in a docker container locally
+using docker desktop. You can find the docker image for PostgreSQL at
+[hub.docker.com](https://hub.docker.com/_/postgres).
+Then configure your .env file `DATABASE_URL` to point to your local database.
 
-
-
-
+Good luck with your project! 🚀
