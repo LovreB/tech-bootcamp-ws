@@ -71,13 +71,15 @@ Password will be retrieved in the workshop.
 
 > The .env file is used to store environment variables that configure your application, such as API keys and database URLs. These variables are loaded at runtime and help keep sensitive information secure and separate from your codebase.
 
-The available API endpoints are:
+Our BFF is a REST API, with the available endpoints:
 
 - GET `/api/movies?title={title}&userId={userId}`, where `title` is something to search movies on, and `userId` is your own name + first letter of last name. Returns list of type `Movie`.
 
 - GET `/users/{userId}/favorites`, Returns list of type `Movie`, which is the users movies marked as favorite.
 
 - POST `/users/{userId}/favorites/{movieId}`, the sent movie will be marked as favorite for user with id `userId`.
+
+> A REST API, also known as a RESTful API, is a simple, uniform interface that is used to make data available through web URLs. REST APIs are the most common APIs used across the web today.
 
 In `types/Movie.ts` we have the `Movie` type, which we will use througout the project - please have a look!
 
@@ -87,12 +89,12 @@ First task for us is to show a single movie. To do this, we will create a React 
 
 > A [React Component](https://react.dev/learn/your-first-component#components-ui-building-blocks) is a UI building block, that can contain markup + logic and be reused in the application. The component can contain other components, _child components_, and will then consequently become a _parent component_. It is often (and in our case) written using [tsx](https://react.dev/learn/writing-markup-with-jsx#jsx-putting-markup-into-javascript) files, which lets you embed markup inside javascript.
 
-In `app/components/Movie.tsx` we have the component to use, which takes a `title` and `background` as props. Let's dig in how it works!
+In `app/components/MovieCard.tsx` we have the component to use, which takes a `title` and `img` as props. Let's dig in how it works!
 
 ```
-type MovieProps = {
+type MovieCardProps = {
   title: string;
-  backgroundImg: string;
+  img: string;
 };
 ```
 
@@ -101,35 +103,18 @@ type MovieProps = {
 > A [prop](https://react.dev/learn/passing-props-to-a-component) is how a parent component can pass information to a child component.
 
 ```
-export const Movie = ({ title, backgroundImg }: MovieProps) => {
+export const MovieCard = ({ title, img }: MovieCardProps) => {
   /*  */
 };
 ```
 
-- This is the name of the React Component, and specifying that it takes props as type `MovieProps`.
+- This is the name of the React Component, and specifying that it takes props as type `MovieCardProps`.
 
 ```
-  return <></>;
+  return <p>My movie card</p>;
 ```
 
-- As return value, we have the markup for the component. Here you can specify all normal html tags that you know of, such as `p` and `h1`.
-
-```
-// MovieList
-
-movieList.map(movie => {
-  return <movieCardComponet name="movie.title" />
-}
-```
-
-(Prepp) - En baskomponent med Syntax, som tar in en Movie.
-
-- Return - är html-templaten som visas upp
-- Visa hur man invokear variaber i Html-templaten
-- Länka till tailwind eller css generellt beroende på vad vi väljer.
-
-- Movie type.
-- Ett exempelmovie som finns redan hårdkodad
+- As return value, we have the markup for the component. Here you can specify all normal html tags that you know of, such as `div` and `h1`.
 
 ### 1.1 Create your own MovieCard
 
@@ -288,17 +273,19 @@ In the `Movie` type, we have one attribute `isFavorite`, that that defines if yo
 
 **Task**: Add the prop `isFavorite` to your MovieCard.tsx component, and display in the card if the movie is your favorite or not.
 
-To not only display, but also be able to change the favorite status, we need a mechanism for that! To make it easier for you, we have prepared a method `addToFavorites` which calls the api endpoint `/users/{userId}/favorites/{movieId}` that adds a movie to the favorites. Feel free to have a look at the implementation!
+To not only display, but also be able to change the favorite status, we need a mechanism for that! To make it easier for you, we have prepared a method `addToFavorites` which calls the api endpoint `/users/{userId}/favorites/{movieId}` that adds a movie to the favorites. Use that function, or implement your own.
 
 **Task**: Add a button to your MovieCard, that on click, calls the method `addToFavorites` with the `imdbId`. Give the user some feedback that favorite has been added.
 
-### 3.2 Toggle favorite on change (Enhancements?? )
+### 3.2 (Enhancements)
 
-TODO.
+**a) Toggle favorite on change**
 
-- add icon in button
-- onClick, send to new endpoint. Id is the payload.
-  [TODO: Fundera över hur du vill göra med state här - kanske belysa att det är problematiskt? Use streaming????]
+- We want to be able to remove movies we have set as favorites as well. Implement a new button which removes a movie as a favorite on click. To remove a movie, you can use the same endpoint as when adding, but with a `DELETE` request instead of `POST`.
+
+**a) Update the state on favorite change**
+
+- When you are adding or removing an item as a favorite, we want to visualise directly if the card is a favorite or not.
 
 ## 4. Show favorites
 
@@ -329,8 +316,6 @@ But for it to be a favorites page, we need to add favorites, right?
 ### 4.4 Celebration!
 
 Now you have completed the "main" part of this workshop - congratulations! Either go back and do the enhancements, or challenge yourself with improving the [responsiveness](https://www.w3schools.com/html/html_responsive.asp) or [A11y](https://developer.mozilla.org/en-US/docs/Web/Accessibility) - two very important aspects for a frontend engineer!
-
-## Backend Path
 
 ## Learn More
 
