@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {/* bg-rose-950 corresponds to the background color - feel free to change! */}
-        <main className="bg-rose-950 items-center flex flex-col gap-6 items-center min-h-screen p-8 pb-20 sm:p-20">
+        <main className="bg-rose-950 items-center flex flex-col gap-6 min-h-screen p-8 pb-20 sm:p-20">
           {children}
         </main>
       </body>

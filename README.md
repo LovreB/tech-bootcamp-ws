@@ -72,8 +72,8 @@ Some tips to get maximal value out of the workshop:
 4. Rename the `.env.sample` file to `.env`, and fill in the values as follows:
 
 - _OMDB_API_KEY_ - the api key you have retrieved from OMDB
-- _DATABASE_URL_ - Set db url as postgresql://<firstname>.<first-letter-of-last-name>:<password>@34.7.50:5432/postgres, where password will be retrieved in the workshop.
-- _NEXT_PUBLIC_USERNAME_ - set username as <firstname>.<first-letter-of-last-name>
+- _DATABASE_URL_ - Set db url as `postgresql://<firstname>.<first-letter-of-last-name>:<password>@34.7.50:5432/postgres`, where password will be retrieved in the workshop.
+- _NEXT_PUBLIC_USERNAME_ - set username as `<firstname>.<first-letter-of-last-name>`
 
 Password will be retrieved in the workshop.
 
@@ -244,9 +244,9 @@ To fetch something from our frontend, we can use the method `fetch` which is ava
 
 ```
 
-**Task:** Update the `gethMovies` function so that it calls our api backend instead of logging to the console. Hint: The available endpoints and what data to send are defined in the section [Getting Started](#0-getting-stared-frontend-path).
+**Task:** Update the `getMovies` function so that it calls our api backend instead of logging to the console. Hint: The available endpoints and what data to send are defined in the section [Getting Started](#0-getting-stared-frontend-path).
 
-**Task:** Use the return value you get from `gethMovies` and update the `movies` variable in `page.tsx`. Hint: How do we set state?
+**Task:** Use the return value you get from `getMovies` and update the `movies` variable in `page.tsx`. Hint: How do we set state?
 
 ### 2.4 (Enhancements)
 
