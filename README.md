@@ -67,7 +67,7 @@ TABLE favorites (
 
 Below is a UML diagram of the tables.
 
-![Database Tables](resources/db-tables.drawio.png 'Database Tables')
+![Database Tables](resources/db-tables.drawio.png "Database Tables")
 
 We will use Prisma schema that we will use to initialise our database tables. Run the following script in your terminal to generate the tables.
 
@@ -188,11 +188,11 @@ Let's first create a GET-endpoint that extracts the title from the request URL a
 as a response. Try creating a GET function by yourself or dd the following code to `app/api/movies/route.ts`:
 
 ```typescript
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
-  const partialTitle = url.searchParams.get('title');
+  const partialTitle = url.searchParams.get("title");
   return NextResponse.json([{ partialTitle }]);
 }
 ```
@@ -244,7 +244,7 @@ export type OmdbMovie = {
 We also have a type `OmdbSearchResponse` in the same directory representing the response from the OMDB API.
 
 ```typescript
-import { OmdbMovie } from '@/app/types/omdb/OmdbMovie';
+import { OmdbMovie } from "@/app/types/omdb/OmdbMovie";
 
 export type OmdbSearchResponse = {
   Search: OmdbMovie[]; // Array of movies matching the search
@@ -299,7 +299,7 @@ export class InternalMovie {
 
   static fromOmdbMovie(omdbMovie: OmdbMovie): InternalMovie {
     return new InternalMovie(
-      '',
+      "",
       omdbMovie.imdbID,
       omdbMovie.Title,
       omdbMovie.Poster
@@ -340,23 +340,23 @@ we will add a `search`-method that fetches movies and returns a `OmdbSearchRespo
 Axios is a promise-based HTTP client.
 
 ```typescript
-import axios from 'axios';
-import { OmdbSearchResponse } from '@/app/types/omdb/OmdbSearchResponse';
+import axios from "axios";
+import { OmdbSearchResponse } from "@/app/types/omdb/OmdbSearchResponse";
 
 class OmdbClient {
   private readonly apiKey: string;
   private readonly baseUrl: string;
 
   constructor() {
-    const apiKey = process.env.OMDB_API_KEY || '';
-    const baseUrl = process.env.OMDB_BASE_URL || '';
+    const apiKey = process.env.OMDB_API_KEY || "";
+    const baseUrl = process.env.OMDB_BASE_URL || "";
     if (!apiKey) {
       throw new Error(
-        'OMDb API key not provided. Set the OMDB_API_KEY environment variable in .env.'
+        "OMDb API key not provided. Set the OMDB_API_KEY environment variable in .env."
       );
     } else if (!baseUrl) {
       throw new Error(
-        'OMDb API URL not provided. Set the OMDB_API_URL environment variable in .env.'
+        "OMDb API URL not provided. Set the OMDB_API_URL environment variable in .env."
       );
     }
     this.apiKey = apiKey;
@@ -375,14 +375,14 @@ class OmdbClient {
           apikey: this.apiKey,
         },
       });
-      if (response.data && response.data.Response === 'True') {
+      if (response.data && response.data.Response === "True") {
         return response.data;
       } else {
         return {} as OmdbSearchResponse;
       }
     } catch (error) {
-      console.error('Error fetching movie by title from OMDB:', error);
-      throw new Error('Failed to fetch movie from OMDb');
+      console.error("Error fetching movie by title from OMDB:", error);
+      throw new Error("Failed to fetch movie from OMDb");
     }
   }
 }
@@ -397,14 +397,14 @@ fetch movies. This service class will represent the Business Logic Layer for mov
 a method `searchByTitle` which will search for movies by title and return a list of `MovieDto` objects.
 
 ```typescript
-import { OmdbMovie } from '@/app/types/omdb/OmdbMovie';
-import { InternalMovie } from '@/app/api/movies/InternalMovie';
-import { omdbClient } from '@/app/api/movies/omdbClient';
-import { MovieDto } from '@/app/types/MovieDto';
-import { OmdbSearchResponse } from '@/app/types/omdb/OmdbSearchResponse';
+import { OmdbMovie } from "@/app/types/omdb/OmdbMovie";
+import { InternalMovie } from "@/app/api/movies/InternalMovie";
+import { omdbClient } from "@/app/api/movies/omdbClient";
+import { MovieDto } from "@/app/types/MovieDto";
+import { OmdbSearchResponse } from "@/app/types/omdb/OmdbSearchResponse";
 
 class MovieService {
-  async searchByTitle(title: string /*, userId: string*/): Promise<MovieDto[]> {
+  async searchByTitle(title: string, _userId: string): Promise<MovieDto[]> {
     const response: OmdbSearchResponse = await omdbClient.searchByTitle(title);
     const movies: OmdbMovie[] = response.Search;
     return movies
@@ -459,23 +459,23 @@ class MovieService {
 Now we can try calling this method from the api movies route that we created
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { movieService } from '@/app/api/movies/MovieService';
-import { MovieDto } from '@/app/types/MovieDto';
+import { NextRequest, NextResponse } from "next/server";
+import { movieService } from "@/app/api/movies/MovieService";
+import { MovieDto } from "@/app/types/MovieDto";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const partialTitle = request.nextUrl.searchParams.get('title');
-  const userId = request.nextUrl.searchParams.get('userId');
+  const partialTitle = request.nextUrl.searchParams.get("title");
+  const userId = request.nextUrl.searchParams.get("userId");
   if (!partialTitle) {
     // <--- Some added error handling
     return NextResponse.json(
-      { error: 'Missing title query parameter' },
+      { error: "Missing title query parameter" },
       { status: 400 }
     );
   }
   if (!userId) {
     return NextResponse.json(
-      { error: 'Missing userId query parameter' },
+      { error: "Missing userId query parameter" },
       { status: 400 }
     );
   }
@@ -543,7 +543,7 @@ export async function POST(
   const params = await context.params;
   if (!params.userId || !params.imdbId) {
     return NextResponse.json(
-      { error: 'Invalid request, missing userId or imdbId' },
+      { error: "Invalid request, missing userId or imdbId" },
       { status: 400 }
     );
   }
@@ -617,7 +617,7 @@ class FavoriteRepository {
         },
       });
     } catch (error) {
-      console.error('Error adding favorite:', error);
+      console.error("Error adding favorite:", error);
       throw error;
     }
   }
