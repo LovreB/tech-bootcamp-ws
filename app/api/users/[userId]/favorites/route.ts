@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { favoriteService } from "@/app/api/users/[userId]/favorites/FavoriteService";
-import { Movie } from "@/app/types/Movie";
+import { MovieDto } from "@/app/types/MovieDto";
 
 export async function GET(
   request: NextRequest,
   context: { params: { userId: string } }
 ): Promise<NextResponse> {
   const params = await context.params;
-  console.log("hej");
   if (!params.userId) {
     return NextResponse.json(
       { error: "Invalid request, missing user ID" },
@@ -15,7 +14,7 @@ export async function GET(
     );
   }
   try {
-    const favoriteMovies: Movie[] = await favoriteService.getAllFavorites(
+    const favoriteMovies: MovieDto[] = await favoriteService.getAllFavorites(
       params.userId
     );
     return NextResponse.json({ favoriteMovies });
