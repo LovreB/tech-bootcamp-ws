@@ -204,10 +204,10 @@ the path of the endpoint. The `GET` function is the handler for the GET request 
 ## 3.2 Verify the endpoint response
 
 To verify that the endpoint works, we can `curl` it in the terminal. Make sure you still have your
-server running, and call the endpoint using
+server running, and call the endpoint using. Note `<your_name>` should be the same as the value of `NEXT_PUBLIC_USERNAME`
 
 ```bash
-curl -X GET http://localhost:3000/api/movies?title=star&userId=<your-firstname>.<first-letter-of-your-last-name>
+curl -X GET http://localhost:3000/api/movies?title=star&userId=<your_name>
 ```
 
 this should return a list of movies with the word "star" in the title.
