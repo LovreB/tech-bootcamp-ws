@@ -19,10 +19,11 @@ This should return a Movie object representing the movie Titanic.
 
 ## 0.2 Configure your personal OMDB API key and the URL
 
+Create a `.env` file in the root of your project.
 Set the omdb url and your personal api key from 0.1 in the [.env](.env) file.
 
 ```markdown
-OMDB_API_KEY=7c90e613 #Set your own API key <your_personal_api_key>
+OMDB_API_KEY= #Set your own API key <your_personal_api_key>
 OMDB_BASE_URL=http://www.omdbapi.com/
 ```
 
@@ -30,11 +31,13 @@ OMDB_BASE_URL=http://www.omdbapi.com/
 
 ### 1.1 Create your own cloud database project using Neon
 
-You will create your own free database using Neon. Create an Free account by going to their website: https://neon.com/ and click on the "Start for free". When you have signed in create a new project:
+You will create your own free database using Neon. Create an Free account by going to their website: https://neon.com/ and click on the "Start for free". When you have signed in create a new project.
 
-![alt text](image.png)
+In the Project Dashboard, you can find the "Connect to you database". We need the connection string to be able to access our database from our project. Copy your connection string and add it to the global enviorment variable `DATABASE_URL` in your `.env` file (dont add the psql prefix).
 
-In the Project Dashboard, you can find the "Connect to you database". We need the connection string to be able to access our database from our project. Copy your connection string and add it to the global enviorment variable `DATABASE_URL` in your .env file (dont add the psql prefix).
+```markdown
+DATABASE_URL= #Set your databae URL
+```
 
 ![alt text](image-2.png)
 
@@ -67,7 +70,7 @@ TABLE favorites (
 
 Below is a UML diagram of the tables.
 
-![Database Tables](resources/db-tables.drawio.png 'Database Tables')
+![Database Tables](resources/db-tables.drawio.png "Database Tables")
 
 We will use Prisma schema that we will use to initialise our database tables. Run the following script in your terminal to generate the tables.
 
@@ -88,7 +91,7 @@ npm run db:generate
 Add the global varaibale `NEXT_PUBLIC_USERNAME` to you .env file. This variable will be used when you seed (add your user to your users db table) and later on during different requests.
 
 ```markdown
-NEXT_PUBLIC_USERNAME=<your_name>
+NEXT_PUBLIC_USERNAME=<firstname.lastname>
 ```
 
 Once you have added this to you .env file you can seed you database by running:
@@ -100,7 +103,7 @@ npm run db:seed
 It should return the text `Added main user { id: 'myName' }`. If you now do a SQL query in your Neon project you should see your user in the table. To do this go to the SQL editor in Neon and run the SQL script:
 
 ```markdown
-SELECT * FROM users;
+SELECT \* FROM users;
 ```
 
 Your database is now ready for the next steps!
@@ -188,11 +191,11 @@ Let's first create a GET-endpoint that extracts the title from the request URL a
 as a response. Try creating a GET function by yourself or dd the following code to `app/api/movies/route.ts`:
 
 ```typescript
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
-  const partialTitle = url.searchParams.get('title');
+  const partialTitle = url.searchParams.get("title");
   return NextResponse.json([{ partialTitle }]);
 }
 ```
@@ -244,7 +247,7 @@ export type OmdbMovie = {
 We also have a type `OmdbSearchResponse` in the same directory representing the response from the OMDB API.
 
 ```typescript
-import { OmdbMovie } from '@/app/types/omdb/OmdbMovie';
+import { OmdbMovie } from "@/app/types/omdb/OmdbMovie";
 
 export type OmdbSearchResponse = {
   Search: OmdbMovie[]; // Array of movies matching the search
@@ -299,7 +302,7 @@ export class InternalMovie {
 
   static fromOmdbMovie(omdbMovie: OmdbMovie): InternalMovie {
     return new InternalMovie(
-      '',
+      "",
       omdbMovie.imdbID,
       omdbMovie.Title,
       omdbMovie.Poster
@@ -340,23 +343,23 @@ we will add a `search`-method that fetches movies and returns a `OmdbSearchRespo
 Axios is a promise-based HTTP client.
 
 ```typescript
-import axios from 'axios';
-import { OmdbSearchResponse } from '@/app/types/omdb/OmdbSearchResponse';
+import axios from "axios";
+import { OmdbSearchResponse } from "@/app/types/omdb/OmdbSearchResponse";
 
 class OmdbClient {
   private readonly apiKey: string;
   private readonly baseUrl: string;
 
   constructor() {
-    const apiKey = process.env.OMDB_API_KEY || '';
-    const baseUrl = process.env.OMDB_BASE_URL || '';
+    const apiKey = process.env.OMDB_API_KEY || "";
+    const baseUrl = process.env.OMDB_BASE_URL || "";
     if (!apiKey) {
       throw new Error(
-        'OMDb API key not provided. Set the OMDB_API_KEY environment variable in .env.'
+        "OMDb API key not provided. Set the OMDB_API_KEY environment variable in .env."
       );
     } else if (!baseUrl) {
       throw new Error(
-        'OMDb API URL not provided. Set the OMDB_API_URL environment variable in .env.'
+        "OMDb API URL not provided. Set the OMDB_API_URL environment variable in .env."
       );
     }
     this.apiKey = apiKey;
@@ -364,9 +367,7 @@ class OmdbClient {
   }
 
   /* <--------------- Add this method ---------------> */
-  async searchByTitle(
-    title: string
-  ): Promise<OmdbSearchResponse> {
+  async searchByTitle(title: string): Promise<OmdbSearchResponse> {
     try {
       const response = await axios.get(this.baseUrl, {
         params: {
@@ -374,14 +375,14 @@ class OmdbClient {
           apikey: this.apiKey,
         },
       });
-      if (response.data && response.data.Response === 'True') {
+      if (response.data && response.data.Response === "True") {
         return response.data;
       } else {
         return {} as OmdbSearchResponse;
       }
     } catch (error) {
-      console.error('Error fetching movie by title from OMDB:', error);
-      throw new Error('Failed to fetch movie from OMDb');
+      console.error("Error fetching movie by title from OMDB:", error);
+      throw new Error("Failed to fetch movie from OMDb");
     }
   }
 }
@@ -396,24 +397,14 @@ fetch movies. This service class will represent the Business Logic Layer for mov
 a method `searchByTitle` which will search for movies by title and return a list of `MovieDto` objects.
 
 ```typescript
-import { OmdbMovie } from '@/app/types/omdb/OmdbMovie';
-import { InternalMovie } from '@/app/api/movies/InternalMovie';
-import { omdbClient } from '@/app/api/movies/omdbClient';
-import { MovieDto } from '@/app/types/MovieDto';
-import { OmdbSearchResponse } from '@/app/types/omdb/OmdbSearchResponse';
-
-class MovieService {
-  async searchByTitle(title: string /*, userId: string*/): Promise<MovieDto[]> {
+  async searchByTitle(title: string, userId: string): Promise<MovieDto[]> {
     const response: OmdbSearchResponse = await omdbClient.searchByTitle(title);
-    const movies: OmdbMovie[] = response.Search;
-    return movies
-      .map(InternalMovie.fromOmdbMovie)
-      .map((movie) => movie.toDto(false));
+    const omdbMovies: OmdbMovie[] = response.Search;
+    if (!omdbMovies) {
+      return [];
+    }
+    return movieDtos;
   }
-}
-
-// Instantiate and export an instance of MovieService
-export const movieService: MovieService = new MovieService();
 ```
 
 The observant reader will notice that we have commented out the `userId` parameter in the `searchByTitle` method.
@@ -430,7 +421,6 @@ We loop through all the movies and check if the user has marked the movie as a f
 the DTOs based on the result from isFavorite.
 
 ```typescript
-class MovieService {
   async searchByTitle(title: string, userId: string): Promise<MovieDto[]> {
     const response: OmdbSearchResponse = await omdbClient.searchByTitle(title);
     const omdbMovies: OmdbMovie[] = response.Search;
@@ -450,31 +440,30 @@ class MovieService {
     );
     return movieDtos;
   }
-}
 ```
 
 ### 3.4.4 Call the search method from the Presentation layer
 
-Now we can try calling this method from the api movies route that we created
+Now we can try calling this method from the api movies route that we created in step 3.3
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server';
-import { movieService } from '@/app/api/movies/MovieService';
-import { MovieDto } from '@/app/types/MovieDto';
+import { NextRequest, NextResponse } from "next/server";
+import { movieService } from "@/app/api/movies/MovieService";
+import { MovieDto } from "@/app/types/MovieDto";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const partialTitle = request.nextUrl.searchParams.get('title');
-  const userId = request.nextUrl.searchParams.get('userId');
+  const partialTitle = request.nextUrl.searchParams.get("title");
+  const userId = request.nextUrl.searchParams.get("userId");
   if (!partialTitle) {
     // <--- Some added error handling
     return NextResponse.json(
-      { error: 'Missing title query parameter' },
+      { error: "Missing title query parameter" },
       { status: 400 }
     );
   }
   if (!userId) {
     return NextResponse.json(
-      { error: 'Missing userId query parameter' },
+      { error: "Missing userId query parameter" },
       { status: 400 }
     );
   }
@@ -493,7 +482,7 @@ If you do not set the response status yourself, the NextResponse will default to
 Curl the endpoint in the terminal to see if it works
 
 ```bash
-curl -X GET "http://localhost:3000/api/movies?title=star&userId=<firstname>.<first-letter-of-lastname>"
+curl -X GET http://localhost:3000/api/movies?title=star&userId=<your-firstname>.<first-letter-of-your-last-name>
 ```
 
 it should return a list of movies with the word "star" in the title. Where isFavorite is false for all movies
@@ -542,7 +531,7 @@ export async function POST(
   const params = await context.params;
   if (!params.userId || !params.imdbId) {
     return NextResponse.json(
-      { error: 'Invalid request, missing userId or imdbId' },
+      { error: "Invalid request, missing userId or imdbId" },
       { status: 400 }
     );
   }
@@ -567,8 +556,6 @@ This method needs to do three things:
 1. save the favorite for the user in the database.
 
 ```typescript
-export class FavoriteService {
-  /* <---------------- Add this method ----------------> */
   async addFavorite(userId: string, imdbId: string): Promise<MovieDto> {
     const user: UserDto = await userService.getUser(userId);
     if (!user) {
@@ -585,10 +572,7 @@ export class FavoriteService {
       );
     }
     return favoriteMovie.toDto(true);
-  }
 }
-
-export const favoriteService: FavoriteService = new FavoriteService();
 ```
 
 ### 3.5.4 Add the saveFavorite method in the favoriteRepository
@@ -602,8 +586,6 @@ and the movie exist in the database. Prisma does this by keeping track of the re
 `schema.prisma`. If the user or the movies does not exist, the prisma will throw an error.
 
 ```typescript
-class FavoriteRepository {
-  /* <---------------- Add this method ----------------> */
   async saveFavorite(
     userId: string,
     movieId: string
@@ -616,11 +598,10 @@ class FavoriteRepository {
         },
       });
     } catch (error) {
-      console.error('Error adding favorite:', error);
+      console.error("Error adding favorite:", error);
       throw error;
     }
   }
-}
 ```
 
 Now you can go to the frontend again and try searching for and liking a movie. Clicking "Go to my favorites"
