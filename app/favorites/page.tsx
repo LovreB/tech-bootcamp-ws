@@ -20,7 +20,9 @@ export default async function Home() {
       <h1>My favorites</h1>
       <Link href={"/"}>Go to start page</Link>
       {error ? (
-        <p className='text-red-500'>{error}</p>
+        <p className="text-red-500">{error}</p>
+      ) : movies.length === 0 ? (
+        <p className="text-white">No favorites yet - go ahead and add some!</p>
       ) : (
         <MovieCardGrid>
           {movies?.map((movie) => (

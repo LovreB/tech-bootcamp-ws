@@ -100,7 +100,7 @@ npm run db:seed
 It should return the text `Added main user { id: 'myName' }`. If you now do a SQL query in your Neon project you should see your user in the table. To do this go to the SQL editor in Neon and run the SQL script:
 
 ```markdown
-SELECT \* FROM users;
+SELECT * FROM users;
 ```
 
 Your database is now ready for the next steps!
@@ -210,7 +210,7 @@ server running, and call the endpoint using
 curl -X GET http://localhost:3000/api/movies?title=star&userId=<your-firstname>.<first-letter-of-your-last-name>
 ```
 
-this should return a list of movies with the word "star" in the title.
+this should return the response `[{"partialTitle":"star"}]`.
 
 ## 3.3 Browse the OMDB API
 
@@ -365,8 +365,7 @@ class OmdbClient {
 
   /* <--------------- Add this method ---------------> */
   async searchByTitle(
-    title: string,
-    _userId: string
+    title: string
   ): Promise<OmdbSearchResponse> {
     try {
       const response = await axios.get(this.baseUrl, {

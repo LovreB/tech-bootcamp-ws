@@ -10,24 +10,11 @@ import { getMovies } from "./data/getMovies";
 import MovieCardGrid from "./components/MovieCardGrid";
 import Link from "next/link";
 
-const defaultMovies: MovieDto[] = [
-  {
-    title: "Titanic",
-    imdbId: "tt0120338",
-    img: "https://m.media-amazon.com/images/M/MV5BYzYyN2FiZmUtYWYzMy00MzViLWJkZTMtOGY1ZjgzNWMwN2YxXkEyXkFqcGc@._V1_SX300.jpg",
-    isFavorite: true,
-  },
-  {
-    title: "Notebook",
-    imdbId: "tt0332280",
-    img: "https://m.media-amazon.com/images/M/MV5BZjE0ZjgzMzYtMTAxYi00NGMzLThmZDktNzFlMzA2MWRmYWQ0XkEyXkFqcGc@._V1_SX300.jpg",
-    isFavorite: false,
-  },
-];
+
 
 export default function Home() {
   const [input, setInput] = useState("");
-  const [movies, setMovies] = useState<MovieDto[]>(defaultMovies);
+  const [movies, setMovies] = useState<MovieDto[]>([]);
   const [error, setError] = useState("");
 
   const onSearch = async () => {
@@ -63,7 +50,7 @@ export default function Home() {
           Search
         </button>
       </div>
-      <Link href={"/favorites"}>Go to my favorites</Link>
+      <Link href={"/favorites"} className="text-white">Go to my favorites</Link>
       {error ? (
         <p className='text-red-500'>{error}</p>
       ) : (

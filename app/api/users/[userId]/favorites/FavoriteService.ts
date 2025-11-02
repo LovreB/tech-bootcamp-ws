@@ -1,4 +1,4 @@
-import {Movie} from "@/app/types/Movie";
+import { MovieDto } from "@/app/types/MovieDto";
 import {userService} from "@/app/api/users/UserService";
 import {movieService} from "@/app/api/movies/MovieService";
 import {InternalMovie} from "@/app/api/movies/InternalMovie";
@@ -26,9 +26,9 @@ export class FavoriteService {
         });
     }
 
-    async getAllFavorites(userId: string): Promise<Movie[]> {
+    async getAllFavorites(userId: string): Promise<MovieDto[]> {
         const favoriteEntities: FavoriteEntity[] = await favoriteRepository.findAllFavorites(userId);
-        const favoriteMovies:  Promise<Movie>[] = favoriteEntities.map(async (favoriteEntity: FavoriteEntity) => {
+        const favoriteMovies:  Promise<MovieDto>[] = favoriteEntities.map(async (favoriteEntity: FavoriteEntity) => {
             const favoriteMovie: MovieEntity | null = await movieRepository.findById(favoriteEntity.movie_id)
             if (!favoriteMovie) {
                 throw new Error(`Movie with ID ${favoriteEntity.movie_id} not found`);
