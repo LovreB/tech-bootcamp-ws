@@ -187,7 +187,9 @@ movies included in the path of our endpoint, we add our `route.ts` file in the
 ## 3.3 Create the GET endpoint
 
 Let's first create a GET-endpoint that extracts the title from the request URL and returns it
-as a response. Try creating a GET function by yourself or dd the following code to `app/api/movies/route.ts`:
+as a response. Try creating a GET function by yourself or add the following code to `app/api/movies/route.ts`:
+
+Note that its still steps to complete for this method to work.
 
 ```typescript
 import { NextResponse } from "next/server";
@@ -195,6 +197,7 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request): Promise<NextResponse> {
   const url = new URL(request.url);
   const partialTitle = url.searchParams.get("title");
+
   return NextResponse.json([{ partialTitle }]);
 }
 ```
@@ -263,7 +266,6 @@ export type MovieDto = {
   imdbId: string;
   title: string;
   img: string;
-  userId: string;
   isFavorite: boolean;
 };
 ```
@@ -342,34 +344,7 @@ we will add a `search`-method that fetches movies and returns a `OmdbSearchRespo
 Axios is a promise-based HTTP client.
 
 ```typescript
-import axios from "axios";
-import { OmdbSearchResponse } from "@/app/types/omdb/OmdbSearchResponse";
-
-class OmdbClient {
-  private readonly apiKey: string;
-  private readonly baseUrl: string;
-
-  constructor() {
-    const apiKey = process.env.OMDB_API_KEY || "";
-    const baseUrl = process.env.OMDB_BASE_URL || "";
-    if (!apiKey) {
-      throw new Error(
-        "OMDb API key not provided. Set the OMDB_API_KEY environment variable in .env."
-      );
-    } else if (!baseUrl) {
-      throw new Error(
-        "OMDb API URL not provided. Set the OMDB_API_URL environment variable in .env."
-      );
-    }
-    this.apiKey = apiKey;
-    this.baseUrl = baseUrl;
-  }
-
-  /* <--------------- Add this method ---------------> */
-  async searchByTitle(
-    title: string,
-    _userId: string
-  ): Promise<OmdbSearchResponse> {
+  async searchByTitle(title: string): Promise<OmdbSearchResponse> {
     try {
       const response = await axios.get(this.baseUrl, {
         params: {
@@ -377,35 +352,25 @@ class OmdbClient {
           apikey: this.apiKey,
         },
       });
-      if (response.data && response.data.Response === "True") {
+      if (response.data && response.data.Response === 'True') {
         return response.data;
       } else {
         return {} as OmdbSearchResponse;
       }
     } catch (error) {
-      console.error("Error fetching movie by title from OMDB:", error);
-      throw new Error("Failed to fetch movie from OMDb");
+      console.error('Error fetching movie by title from OMDB:', error);
+      throw new Error('Failed to fetch movie from OMDb');
     }
   }
-}
-
-export const omdbClient = new OmdbClient();
 ```
 
 ### 3.4.3 Search by title in MovieService
 
 We also have a service class `MovieService` in `api/movies/MovieService.ts` that will use the `omdbClient` to
-fetch movies. This service class will represent the Business Logic Layer for movies. In the `MovieService` we add
+fetch movies. This service class will represent the Business Logic Layer for movies. In the `MovieService` we have to add
 a method `searchByTitle` which will search for movies by title and return a list of `MovieDto` objects.
 
 ```typescript
-import { OmdbMovie } from "@/app/types/omdb/OmdbMovie";
-import { InternalMovie } from "@/app/api/movies/InternalMovie";
-import { omdbClient } from "@/app/api/movies/omdbClient";
-import { MovieDto } from "@/app/types/MovieDto";
-import { OmdbSearchResponse } from "@/app/types/omdb/OmdbSearchResponse";
-
-class MovieService {
   async searchByTitle(title: string, _userId: string): Promise<MovieDto[]> {
     const response: OmdbSearchResponse = await omdbClient.searchByTitle(title);
     const movies: OmdbMovie[] = response.Search;
@@ -413,14 +378,10 @@ class MovieService {
       .map(InternalMovie.fromOmdbMovie)
       .map((movie) => movie.toDto(false));
   }
-}
-
-// Instantiate and export an instance of MovieService
-export const movieService: MovieService = new MovieService();
 ```
 
-The observant reader will notice that we have commented out the `userId` parameter in the `searchByTitle` method.
-The reason why the userId is also sent along is that whilst searching in the frontend, the frontend
+The observant reader will notice that there is an `_` in our `_userId` parameter in the `searchByTitle` method.
+The means that we currently dont use that property in the methos. The reason why the userId is also sent along is that whilst searching in the frontend, the frontend
 also wants to know if the movies it displays are favorites for the user. This is why we have the `isFavorite`
 boolean value within the `Movie` DTO object. This is of course user-specific, so we need to send along the userId.
 
@@ -458,7 +419,7 @@ class MovieService {
 
 ### 3.4.4 Call the search method from the Presentation layer
 
-Now we can try calling this method from the api movies route that we created
+Now we can try calling this method from the api movies route that we created by updating it to include our newly created `searchByTitle` method:
 
 ```typescript
 import { NextRequest, NextResponse } from "next/server";
