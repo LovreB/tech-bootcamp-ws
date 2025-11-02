@@ -22,7 +22,7 @@ This should return a Movie object representing the movie Titanic.
 Set the omdb url and your personal api key from 0.1 in the [.env](.env) file.
 
 ```markdown
-OMDB_API_KEY=7c90e613 #Set your own API key <your_personal_api_key>
+OMDB_API_KEY= #Set your own API key <your_personal_api_key>
 OMDB_BASE_URL=http://www.omdbapi.com/
 ```
 
@@ -30,11 +30,13 @@ OMDB_BASE_URL=http://www.omdbapi.com/
 
 ### 1.1 Create your own cloud database project using Neon
 
-You will create your own free database using Neon. Create an Free account by going to their website: https://neon.com/ and click on the "Start for free". When you have signed in create a new project:
-
-![alt text](image.png)
+You will create your own free database using Neon. Create an Free account by going to their website: https://neon.com/ and click on the "Start for free". When you have signed in create a new project.
 
 In the Project Dashboard, you can find the "Connect to you database". We need the connection string to be able to access our database from our project. Copy your connection string and add it to the global enviorment variable `DATABASE_URL` in your .env file (dont add the psql prefix).
+
+```markdown
+DATABASE_URL=
+```
 
 ![alt text](image-2.png)
 
@@ -88,7 +90,7 @@ npm run db:generate
 Add the global varaibale `NEXT_PUBLIC_USERNAME` to you .env file. This variable will be used when you seed (add your user to your users db table) and later on during different requests.
 
 ```markdown
-NEXT_PUBLIC_USERNAME=<your_name>
+NEXT_PUBLIC_USERNAME=<firstname.lastname>
 ```
 
 Once you have added this to you .env file you can seed you database by running:
