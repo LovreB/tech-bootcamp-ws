@@ -72,7 +72,7 @@ Some tips to get maximal value out of the workshop:
 4. Rename the `.env.sample` file to `.env`, and fill in the values as follows:
 
 - _OMDB_API_KEY_ - the api key you have retrieved from OMDB
-- _DATABASE_URL_ - Set db url as `postgresql://<firstname>.<first-letter-of-last-name>:<password>@34.7.50:5432/postgres`, where password will be retrieved in the workshop.
+- _DATABASE_URL_ = 'postgresql://neondb_owner:npg_A5zj6PKNwhMX@ep-restless-paper-agp2zcf9-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
 - _NEXT_PUBLIC_USERNAME_ - set username as `<firstname>.<first-letter-of-last-name>`
 
 Password will be retrieved in the workshop.
@@ -90,6 +90,15 @@ Our BFF is a REST API, with the available endpoints:
 > A REST API, also known as a RESTful API, is a simple, uniform interface that is used to make data available through web URLs. REST APIs are the most common APIs used across the web today.
 
 In `types/Movie.ts` we have the `Movie` type, which we will use througout the project - please have a look!
+
+## 0. Prepare the database
+
+Run the following commands to prepare for the database:
+
+```
+npm run db:generate
+npm run db:seed
+```
 
 ## 1. Present movie
 
